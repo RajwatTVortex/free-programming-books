@@ -26,7 +26,12 @@ jobs:
     if: ${{ github.actor != 'dependabot[bot]' }} # avoid dependabot PRs
     runs-on: ubuntu-latest
     steps:
-
+      # ============= InvisiRisk Setup =============
+      - name: Setup PSE
+        uses: invisirisk/pse-action@latest
+        with:
+          app_token: ${{secrets.IR_API_KEY}}
+      # ============= InvisiRisk Setup End =============
       - name: Label conflicting PRs that are open
         id: pr-labeler
         uses: eps1lon/actions-label-merge-conflict@v3.0.3
@@ -71,3 +76,10 @@ jobs:
         env:
           GITHUB_PUBLIC_URL:   ${{ format('{0}/{1}/pull', github.server_url, github.repository) }}
           INPUT_PRS: ${{ steps.set-prs.outputs.prs }}
+      # ============= InvisiRisk Cleanup =============
+      - name: Cleanup PSE
+        if: always()
+        uses: invisirisk/pse-action@latest
+        with:
+          cleanup: "true"
+      # ============= InvisiRisk Cleanup End =============
